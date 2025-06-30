@@ -1,0 +1,110 @@
+[terrastate]
+_origin = "git+https://github.com/Vaelatern/declarative-nomad-jobs//packs/the-maldridge"
+[terrastate.terrastate]
+datacenters = ["MATRIX-CONTROL"]
+version = "v1.2.1"
+tags = ["traefik.enable=true"]
+primary_user = "maldridge"
+[terrastate.terrastate.persist.volume]
+type      = "host"
+source    = "terrastate_data"
+read_only = false
+[terrastate.terrastate.passwords] # Move this section to a different file in a config.d setup to ease bootstrap
+maldridge = "hunter2"
+terraform = "hunter1"
+
+[netstate]
+_origin = "git+https://github.com/Vaelatern/declarative-nomad-jobs//packs/the-maldridge"
+_origin-name = "netinst"
+[netstate.netstate]
+datacenters = ["MATRIX-CONTROL"]
+tags = ["traefik.enable=true"]
+[netstate.netstate.images]
+pxe = "registry.matrix.michaelwashere.net:5000/netinst/pxe:1"
+shoelaces = "registry.matrix.michaelwashere.net:5000/netinst/shoelaces:1"
+
+[vector]
+_origin = "git+https://github.com/Vaelatern/declarative-nomad-jobs//packs/the-maldridge"
+[vector.vector]
+datacenters = ["MATRIX", "MATRIX-CONTROL"]
+version = "0.45.0-alpine"
+resources = {"memory"= 150}
+[vector.vector.elasticsearch]
+endpoints = ["http://logs.matrix.michaelwashere.net/insert/elasticsearch/"]
+
+[proxy]
+_origin = "git+https://github.com/Vaelatern/declarative-nomad-jobs//packs/the-maldridge"
+_origin-name = "traefik"
+[proxy.proxy]
+datacenters = ["MATRIX-CONTROL"]
+version = "v3.3.4"
+tags = [
+	"traefik.http.routers.dashboard.rule=Host(`proxy.matrix.michaelwashere.net`)",
+	"traefik.http.routers.dashboard.service=api@internal"
+	]
+rootHost = "matrix.michaelwashere.net"
+args         = [
+           "--accesslog=false",
+           "--api.dashboard",
+           "--entrypoints.http.address=:80",
+           "--entrypoints.https.address=:443",
+           "--entryPoints.https.http.tls.certResolver=default",
+           "--entryPoints.https.asDefault=true",
+           "--entryPoints.http.http.redirections.entryPoint.to=https",
+           "--entryPoints.http.http.redirections.entryPoint.scheme=https",
+           "--metrics.prometheus",
+           "--ping=true",
+           "--providers.nomad.refreshInterval=30s",
+           "--providers.nomad.endpoint.address=unix://${NOMAD_SECRETS_DIR}/api.sock",
+           "--providers.nomad.defaultRule=Host(`{{ .Name }}.matrix.michaelwashere.net`)",
+           "--providers.file.filename=/local/config.yaml",
+         ]
+[proxy.proxy.config]
+[proxy.proxy.config.tls.stores.default.defaultCertificate]
+certFile = "/secrets/cert.pem"
+keyFile = "/secrets/cert.key"
+[proxy.proxy.config.http.services.nomad.loadBalancer]
+servers = [{"url" = "http://172.26.64.1:4646"}]
+[proxy.proxy.config.http.routers.nomad]
+rule = "Host(`nomad.matrix.michaelwashere.net`)"
+service = "nomad"
+
+[ara]
+_origin = "git+https://github.com/Vaelatern/declarative-nomad-jobs//packs/the-maldridge"
+[ara.ara]
+datacenters = ["MATRIX-CONTROL"]
+version = "v3.3.4"
+tags = ["traefik.enable=true"]
+allowed_hosts = ['ara.matrix.michaelwashere.net']
+[ara.ara.persist.volume]
+type      = "host"
+source    = "ara_data"
+read_only = false
+
+[ansible]
+_origin = "git+https://github.com/Vaelatern/declarative-nomad-jobs//packs/the-maldridge"
+[ansible.ansible]
+image = "registry.matrix.michaelwashere.net:5000/ansible/ansible:${NOMAD_META_COMMIT}"
+datacenters = ["MATRIX", "MATRIX-CONTROL"]
+
+[cert-renew]
+_origin = "git+https://github.com/Vaelatern/declarative-nomad-jobs//packs/the-maldridge"
+[cert-renew.cert-renew]
+datacenters = ["MATRIX", "MATRIX-CONTROL"]
+crons = ["@weekly"]
+image = "registry.matrix.michaelwashere.net:5000/terraform/tls:e744e60"
+
+[vmlogs]
+_origin = "git+https://github.com/Vaelatern/declarative-nomad-jobs//packs/the-maldridge"
+_origin-name = "logs"
+[vmlogs.vmlogs]
+datacenters = ["MATRIX-CONTROL"]
+tags = ["traefik.enable=true"]
+version = "v1.15.0-victorialog"
+
+[zot]
+_origin = "git+https://github.com/Vaelatern/declarative-nomad-jobs//packs/the-maldridge"
+[zot.zot]
+datacenters = ["MATRIX-CONTROL"]
+tags = ["traefik.enable=true"]
+version = "v2.1.2"
