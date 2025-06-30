@@ -17,7 +17,7 @@ job [[ getarg "jobname" .Args ]] {
     task "ansible" {
       driver = "docker"
       config {
-        image        = [[ getarg "image" .Args ]]
+        image        = "[[ getarg "baseimage" .Args | unquote ]]:${NOMAD_META_COMMIT}"
         network_mode = "host"
         privileged   = true
         command      = "/ansible/venv/bin/ansible-playbook"

@@ -84,12 +84,12 @@ read_only = false
 [ansible]
 _origin = "git+https://github.com/Vaelatern/declarative-nomad-jobs//packs/the-maldridge"
 [ansible.ansible]
-image = "registry.matrix.michaelwashere.net:5000/ansible/ansible:${NOMAD_META_COMMIT}"
+baseimage = "registry.matrix.michaelwashere.net:5000/ansible/ansible"
 datacenters = ["MATRIX", "MATRIX-CONTROL"]
 
-[cert-renew]
+[letsencrypt]
 _origin = "git+https://github.com/Vaelatern/declarative-nomad-jobs//packs/the-maldridge"
-[cert-renew.cert-renew]
+[letsencrypt.cert-renew]
 datacenters = ["MATRIX", "MATRIX-CONTROL"]
 crons = ["@weekly"]
 image = "registry.matrix.michaelwashere.net:5000/terraform/tls:e744e60"
