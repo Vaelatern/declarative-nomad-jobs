@@ -42,7 +42,6 @@ tags = [
 	"traefik.http.routers.dashboard.rule=Host(`proxy.matrix.michaelwashere.net`)",
 	"traefik.http.routers.dashboard.service=api@internal"
 	]
-rootHost = "matrix.michaelwashere.net"
 args         = [
            "--accesslog=false",
            "--api.dashboard",
