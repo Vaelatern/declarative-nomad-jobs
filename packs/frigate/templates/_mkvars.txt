@@ -1,0 +1,9 @@
+_camera_inventory_executable.source
+[[ range $i, $_ := (dig "cameras" "inventory" (list) .Args) ]]
+@camera-[[ printf "%02d" $i ]].var.nomad.hcl
+[[ end ]]
+--
+_camera_inventory.source
+[[ range $i, $_ := (dig "cameras" "inventory" (list) .Args) ]]
+camera-[[ printf "%02d" $i ]].var.nomad.hcl
+[[ end ]]

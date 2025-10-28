@@ -1,0 +1,3 @@
+path = "[[ dig "var-root" "facility/cameras" .Args ]]/inventory/[[ printf "%02d" .NameIndex ]]"
+
+items [[ index (dig "cameras" "inventory" (list) .Args) .NameIndex | tohcl ]]

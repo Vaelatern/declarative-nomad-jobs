@@ -1,0 +1,1 @@
+_camera_inventory.source

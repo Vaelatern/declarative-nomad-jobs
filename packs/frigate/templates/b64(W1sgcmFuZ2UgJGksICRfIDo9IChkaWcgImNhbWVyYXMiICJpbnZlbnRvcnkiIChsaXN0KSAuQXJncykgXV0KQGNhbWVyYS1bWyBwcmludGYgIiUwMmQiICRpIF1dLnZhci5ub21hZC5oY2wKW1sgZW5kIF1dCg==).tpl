@@ -1,0 +1,1 @@
+_camera_inventory_executable.source
