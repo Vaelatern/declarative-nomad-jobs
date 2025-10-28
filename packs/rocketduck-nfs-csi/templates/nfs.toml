@@ -1,0 +1,8 @@
+[rocketduck-nfs-csi.nfs]
+datacenters = ["dc1"]
+version = "1.1.0"
+nfs.server = "192.168.1.10"
+nfs.root = "/export"
+csi-name = "my-nfs"
+resources.controller = {cpu = 500, memory = 256}
+resources.node = {cpu = 500, memory = 256}
