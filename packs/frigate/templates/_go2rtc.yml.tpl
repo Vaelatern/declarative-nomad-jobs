@@ -14,6 +14,7 @@ streams:
 {{ end -}}
 {{ range nomadVarList "[[ dig "var-root" "facility/cameras" .Args ]]/inventory" -}}
  {{ with nomadVar .Path -}}
+ {{ if ne .disabled.Value "true" }}
   {{ $user := "" -}}
   {{ $pass := "" -}}
   {{ if .Keys | contains "username" -}}
@@ -43,6 +44,10 @@ streams:
    {{ $fullQualityFFMPEG = "#preset-rtsp-restream" -}}
    {{ $lowQualityFFMPEG = "" -}}
   {{ else if eq .manufacturer.Value "annke" -}}
+  {{ else if eq .manufacturer.Value "axis" -}}
+   {{/* Later give us a profile0 and profile1 override in the variable config since these are custom terms */}}
+   {{ $fullQualityURL = print "rtsp://" $user ":" $pass "@" .ip ":554/onvif-media/media.amp?profile=profile0" -}}
+   {{ $lowQualityURL = print "rtsp://" $user ":" $pass "@" .ip ":554/onvif-media/media.amp?profile=profile1" -}}
   {{- end }}
   {{ or .description "NO-NAME-SET" }}-high:
     - "{{ $fullQualityURL }}"
@@ -53,6 +58,7 @@ streams:
       {{- else }}
     - "ffmpeg:{{ or .description "NO-NAME-SET" }}-low{{ $lowQualityFFMPEG }}"
       {{ end }}
+ {{ end -}}
  {{ end -}}
 {{- end }}
 [[ end ]]

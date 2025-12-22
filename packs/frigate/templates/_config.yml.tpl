@@ -5,6 +5,7 @@ go2rtc:
   streams:
 {{ range nomadVarList "[[ dig "var-root" "facility/cameras" .Args ]]/inventory" -}}
  {{ with nomadVar .Path -}}
+ {{ if ne .disabled.Value "true" }}
   {{ $localGo2rtc := print "rtsp://127.0.0.1:" (env "NOMAD_PORT_go2rtc") -}}
   {{ $fullQualityFFMPEG := "#video=h264#audio=opus" -}}
   {{ $lowQualityFFMPEG := "#video=h264#audio=opus" -}}
@@ -14,6 +15,7 @@ go2rtc:
       - "{{ print $localGo2rtc "/" (or .description "NO-NAME-SET") "-high" }}"
     {{ or .description "NO-NAME-SET" }}-low:
       - "{{ print $localGo2rtc "/" (or .description "NO-NAME-SET") "-low" }}"
+ {{ end -}}
  {{ end -}}
 {{- end }}
 
@@ -71,6 +73,7 @@ record:
   enabled: True
   retain:
     days: 14
+    mode: motion
   events:
     retain:
       default: 15
@@ -85,6 +88,7 @@ snapshots:
 cameras:
 {{ range nomadVarList "[[ dig "var-root" "facility/cameras" .Args ]]/inventory" -}}
 {{ with nomadVar .Path }}
+{{ if ne .disabled.Value "true" }}
   {{ or .description "NO-NAME-SET" }}:
     detect:
       enabled: True
@@ -95,8 +99,11 @@ cameras:
             - record
         - path: rtsp://127.0.0.1:{{ env "NOMAD_PORT_go2rtc" }}/{{ or .description "NO-NAME-SET" }}-low
           roles:
-            - audio
+            {{ if ne .audio.Value "false" }}- audio{{ end }}
             - detect
+    {{ if eq .audio.Value "false" }}audio:
+      enabled: False{{ end }}
+{{ end -}}
 {{ end -}}
 {{- end }}
 
