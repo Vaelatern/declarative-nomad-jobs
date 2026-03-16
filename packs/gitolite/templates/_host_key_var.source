@@ -1,0 +1,4 @@
+path = "nomad/jobs/[[ getarg "jobname" .Args | unquote ]]/gitolite/gitolite/[[ index .NameArgs .NameIndex ]]"
+items {
+  key = [[ dig "hostkeys" (index .NameArgs .NameIndex) "" .Args | tojson ]]
+}
