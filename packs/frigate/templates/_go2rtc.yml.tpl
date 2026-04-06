@@ -44,6 +44,9 @@ streams:
    {{ $fullQualityFFMPEG = "#preset-rtsp-restream" -}}
    {{ $lowQualityFFMPEG = "" -}}
   {{ else if eq .manufacturer.Value "annke" -}}
+  {{ else if eq .manufacturer.Value "dahua" -}}
+    {{ $fullQualityURL = print "rtsp://" $user ":" $pass "@" .ip "/cam/realmonitor?channel=1&subtype=0" -}}
+    {{ $lowQualityURL  = print "rtsp://" $user ":" $pass "@" .ip "/cam/realmonitor?channel=1&subtype=1" -}}
   {{ else if eq .manufacturer.Value "axis" -}}
    {{/* Later give us a profile0 and profile1 override in the variable config since these are custom terms */}}
    {{ $fullQualityURL = print "rtsp://" $user ":" $pass "@" .ip ":554/onvif-media/media.amp?profile=profile0" -}}
